@@ -65,6 +65,9 @@ type VoiceConnection struct {
 
 	op4 voiceOP4
 	op2 voiceOP2
+	
+	SendAudioFrameSize int
+	SendSampleRate int
 
 	voiceSpeakingUpdateHandlers []VoiceSpeakingUpdateHandler
 }
@@ -426,11 +429,10 @@ func (v *VoiceConnection) onEvent(message []byte) {
 		}
 
 		// Start the opusSender.
-		// TODO: Should we allow 48000/960 values to be user defined?
 		if v.OpusSend == nil {
 			v.OpusSend = make(chan []byte, 2)
 		}
-		go v.opusSender(v.udpConn, v.close, v.OpusSend, 48000, 960)
+		go v.opusSender(v.udpConn, v.close, v.OpusSend, v.SendSampleRate, v.SendAudioFrameSize)
 
 		// Start the opusReceiver
 		if !v.deaf {
