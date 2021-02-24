@@ -707,7 +707,8 @@ func (v *VoiceConnection) opusSender(udpConn *net.UDPConn, close <-chan struct{}
 	binary.BigEndian.PutUint32(udpHeader[8:], v.op2.SSRC)
 
 	// start a send loop that loops until buf chan is closed
-	ticker := time.NewTicker(time.Millisecond * time.Duration(size/(rate/1000)))
+	//divide by 500 instead of 1000 to account for stereo audio
+	ticker := time.NewTicker(time.Millisecond * time.Duration(size/(rate/500)))
 	defer ticker.Stop()
 	for {
 
