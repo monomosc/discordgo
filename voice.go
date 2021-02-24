@@ -27,6 +27,10 @@ import (
 // Code related to both VoiceConnection Websocket and UDP connections.
 // ------------------------------------------------------------------------------------------------
 
+var (
+	SendAudioFrameSize int = 960
+	SendSampleRate int = 48000
+)
 // A VoiceConnection struct holds all the data and functions related to a Discord Voice Connection.
 type VoiceConnection struct {
 	sync.RWMutex
@@ -66,8 +70,6 @@ type VoiceConnection struct {
 	op4 voiceOP4
 	op2 voiceOP2
 	
-	SendAudioFrameSize int
-	SendSampleRate int
 
 	voiceSpeakingUpdateHandlers []VoiceSpeakingUpdateHandler
 }
@@ -432,7 +434,7 @@ func (v *VoiceConnection) onEvent(message []byte) {
 		if v.OpusSend == nil {
 			v.OpusSend = make(chan []byte, 2)
 		}
-		go v.opusSender(v.udpConn, v.close, v.OpusSend, v.SendSampleRate, v.SendAudioFrameSize)
+		go v.opusSender(v.udpConn, v.close, v.OpusSend, SendSampleRate, SendAudioFrameSize)
 
 		// Start the opusReceiver
 		if !v.deaf {
